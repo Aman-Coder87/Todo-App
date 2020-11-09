@@ -8,27 +8,44 @@ const todoList = document.querySelector('.todo-list');
 // data store container of form input value
 const todoContainer = document.querySelector('.todo-container');
 
+// firebase realtime database info ...
+const database = firebase.database();
+const ref = database.ref('/users/data/');
+
+// let data = "hello world" ;
+
+// CRUD operation //
+
 // fat arrow function to create and append data from form-action
 function addTodo() {
     // creating div for todoContainer
     let todoDiv = document.createElement('div');
     todoDiv.classList.add('child-todo-container');
-    
+
     // creating content for child-todoContainer
     let todoP = document.createElement('p');
     todoP.classList.add('grandchild-todo-container');
     todoP.innerText = textArea.value;
+    //
+    ref.push(todoP.innerText);
+    ref.on('value', (snapshot) => {
+        snapshot.todoP((childSnapshot) => {
+            let data = childSnapshot.val();
+            todoP.innerText = data ;
+        });
+    });
+    //
     todoDiv.appendChild(todoP);
-    
+
     // adding complete button to todoContainer
     let completeBtn = document.createElement('button');
     completeBtn.classList.add('completeBtn');
     let completeImg = document.createElement('img');
-    completeImg.src = '/Img/tick.png' ;
+    completeImg.src = '/Img/tick.png';
     completeImg.classList.add('complete');
     completeBtn.appendChild(completeImg);
     todoDiv.appendChild(completeBtn);
-    
+
     // adding trash button to todoContainer
     let todoBtn = document.createElement('button');
     todoBtn.classList.add('trashBtn');
@@ -37,30 +54,37 @@ function addTodo() {
     todoImg.classList.add('trash');
     todoBtn.appendChild(todoImg);
     todoDiv.appendChild(todoBtn);
-    
+
     // appendChild created Element
     todoContainer.appendChild(todoDiv);
     // clearing input fill after submitting
     textArea.value = "";
-    
+
     // function to complete list parentElement
     function complete(e) {
-        const list = e.target ;
+        const list = e.target;
         list.style.textDecoration = "line-through";
         list.classList.toggle('sucess');
-        console.log('hell0');
     }
-    // function to delete list parent element 
+    // function to delete list parent element
     function hello(e) {
-        const list = e.target ;
+        const list = e.target;
+        //
+        ref.on('value' , (snapshot) => {
+            snapshotforEach((childSnapshot) => {
+                childSnapshot.ref.remove();
+            });
+        });
+        //
         list.parentElement.remove();
+        
     }
-    //listining on completeBtn 
-    completeBtn.addEventListener('click' , (event) =>{
+    //listining on completeBtn
+    completeBtn.addEventListener('click', (event) => {
         completeBtn.parentElement.classList.toggle('sucess');
     });
     // listining event on trash button
-    todoBtn.addEventListener('click' , hello);
+    todoBtn.addEventListener('click', hello);
 }
 
 // listening event of form button

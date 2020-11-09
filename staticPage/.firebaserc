@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "task-manager-e2d22",
+    "staging": "task-manager-e2d22"
+  }
+}
